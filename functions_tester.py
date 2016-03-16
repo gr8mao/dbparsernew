@@ -161,4 +161,4 @@ def get_values_from_dict(table, keys):
 
 
 if __name__ == '__main__':
-    jointab('test_table.txt','jopa.txt')
+    jointab('test_table.txt','jopa.txt') # Hello
