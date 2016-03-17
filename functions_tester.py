@@ -1,7 +1,9 @@
 from collections import OrderedDict
+import os
 
 
 def read_table(nameOfTable):
+    nameOfTable += '.txt'
     try:
         file = open(nameOfTable, 'r')
     except IOError:
@@ -20,6 +22,7 @@ def read_table(nameOfTable):
 
 
 def save_table(table, nameOfTable):
+    nameOfTable += '.txt'
     data = []
     for row in table:
         headers = list(row.keys())
@@ -37,7 +40,8 @@ def save_table(table, nameOfTable):
         file.write(stri.rstrip("|") + '\n')
 
 
-def show(table):
+def show(nameOfTable):
+    table = read_table(nameOfTable)
     data = []
     for row in table:
         headers = list(row.keys())
@@ -129,26 +133,25 @@ def jointab(table1='', table2=''):
         k = 0
         values = []
         temp = []
-        while k != len(values1)+len(values2):
+        while k != len(values1) + len(values2):
             if check:
                 temp.append(values1[i])
-                temp.append(values1[i+1])
+                temp.append(values1[i + 1])
                 i += 2
                 k += 2
             else:
                 temp.append(values2[j])
-                temp.append(values2[j+1])
+                temp.append(values2[j + 1])
                 values.append(temp)
                 temp = []
                 j += 2
                 k += 2
-            if k%2 == 0:
-                check = not check
+            check = not check
         table_ = []
         for elem in values:
             temp = OrderedDict(zip(headers, elem))
             table_.append(temp)
-        save_table(table_,table1[:table1.index('.')] + table2)
+        save_table(table_, table1[:table1.index('.')] + table2)
         show(table_)
 
 
@@ -160,5 +163,55 @@ def get_values_from_dict(table, keys):
     return values
 
 
+def delnote(name_of_table, condition):
+    table = read_table(name_of_table)
+    if not table:
+        print("Table is not exist")
+        return
+    condition = condition.replace(' ', '').split('=')
+    if len(condition) != 2:
+        print("Wrong condition")
+    key = condition[0]
+    value = condition[1]
+    if key not in list(table[0].keys()):
+        print("No such key in table", name_of_table)
+        return
+    r = False
+    for row in table:
+        if row[key] == value:
+            table.remove(row)
+            r = True
+    if not r:
+        print('No rows affected')
+        return
+    save_table(table, name_of_table)
+
+
+def deltable(nameOfTable):
+    choice = input("Are you sure? (y/n) ")
+    if choice is 'y' or 'Y':
+        nameOfTable += '.txt'
+        try:
+            os.remove(nameOfTable)
+        except:
+            print('Table is not exist')
+            return
+
+
+def sort(nameOfTable, key, mode = 'inc'):
+    table = read_table(nameOfTable)
+    if not table:
+        print("Table is not exist")
+        return
+    if key not in list(table[0].keys()):
+        print("No such key in table", nameOfTable)
+        return
+    if mode == 'inc':
+        table = sorted(table, key=lambda d: d[key])
+    elif mode == 'dec':
+        table = sorted(table, key=lambda d: d[key], reverse = True)
+    save_table(table,nameOfTable)
+
+
 if __name__ == '__main__':
-    jointab('test_table.txt','jopa.txt') # Hello
+    sort('jopa', '<int>Ne', "inc")

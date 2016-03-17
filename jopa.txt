@@ -1,6 +1,6 @@
-<int>Ne             |<str>Fame
-3                   |Ggre
-2                   |Ghf                 
-4                   |HJgdjs              
-2                   |Ghf                 
-4                   |HJgdjs
+<int>Ne             |<str>Fame           
+2                   |E                   
+2                   |A                   
+3                   |C                   
+4                   |D                   
+4                   |B                   
