@@ -40,8 +40,9 @@ def save_table(table, nameOfTable):
         file.write(stri.rstrip("|") + '\n')
 
 
-def show(nameOfTable):
-    table = read_table(nameOfTable)
+def show(nameOfTable, table = None):
+    if not table:
+        table = read_table(nameOfTable)
     data = []
     for row in table:
         headers = list(row.keys())
@@ -62,15 +63,7 @@ def addnote(table, keys, values):
     if not len(keys) == len(values):
         print('Wrong number of arguments')
         return
-    headers = list(table[0].keys())
-    types = []
-    names = []
-    for header in headers:
-        header = header.split('>')
-        header[0] = header[0][header[0].index('<') + 1:]
-        types.append(header[0])
-        names.append(header[1])
-    headers = OrderedDict(zip(names, types))
+    headers = get_headers(list(table[0].keys()))
     if all(map(lambda a, b: a == b, keys, list(headers.keys()))):
         i = 0
         value = []
@@ -97,8 +90,17 @@ def addnote(table, keys, values):
         table.append(temp)
         return table
 
+def get_headers(headers):
+    types = []
+    names = []
+    for header in headers:
+        header = header.split('>')
+        header[0] = header[0][header[0].index('<') + 1:]
+        types.append(header[0])
+        names.append(header[1])
+    return OrderedDict(zip(names, types))
 
-def mkTable(name, args):
+def mktable(name, args):
     name += '.txt'
     line = ''
     for elem in args:
@@ -187,12 +189,12 @@ def delnote(name_of_table, condition):
     save_table(table, name_of_table)
 
 
-def deltable(nameOfTable):
+def deltable(name_of_table):
     choice = input("Are you sure? (y/n) ")
     if choice is 'y' or 'Y':
-        nameOfTable += '.txt'
+        name_of_table += '.txt'
         try:
-            os.remove(nameOfTable)
+            os.remove(name_of_table)
         except:
             print('Table is not exist')
             return
@@ -213,5 +215,22 @@ def sort(nameOfTable, key, mode = 'inc'):
     save_table(table,nameOfTable)
 
 
+def filter(nameOfTable, condition):
+    table = read_table(nameOfTable)
+    if not table:
+        print("Table is not exist")
+        return
+    condition = condition.split(' ')
+    key = condition[0]
+    value = condition[2]
+    new_table = []
+    headers = get_headers(list(table[0].keys()))
+    key = '<'+headers[key]+'>'+key
+    for elem in table:
+        if int(elem[key]) > int(value):  # В трансляторе сделать запись из вызова
+            new_table.append(elem)
+    show(nameOfTable,new_table)  # Стоит ли сохранять таблицу?
+
+
 if __name__ == '__main__':
-    sort('jopa', '<int>Ne', "inc")
+    filter('jopa','Ne > 2')
