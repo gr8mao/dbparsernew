@@ -1,0 +1,7 @@
+<int>id             |<str>Name           |<int>De             |<str>Fame           
+1                   |T                   |1                   |T                   
+3                   |qwe                 |3                   |qwe                 
+4                   |SA                  |4                   |SA                  
+5                   |qew                 |5                   |qew                 
+2                   |zc                  |2                   |zc                  
+6                   |qrwe                |6                   |qrwe                
