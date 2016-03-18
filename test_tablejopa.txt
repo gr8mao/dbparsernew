@@ -1,6 +1,0 @@
-<int>id             |<str>Name           |<int>Ne             |<str>Fame           
-3                   |Ggre                |3                   |Ggre                
-2                   |Ghf                 |2                   |Herro               
-4                   |HJgdjs              |4                   |HJgdjs              
-2                   |Ghf                 |2                   |Ghf                 
-4                   |HJgdjs              |4                   |HJgdjs              

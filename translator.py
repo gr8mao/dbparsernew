@@ -1,5 +1,5 @@
 commands = ['show', 'mktable', 'addnote', 'delnote', 'deltable', 'filter', 'sort', 'jointab']
-mainPrinted = 0
+mainPrinted = False
 GenPrinted = False
 table = 'table.txt'
 main = ''
@@ -18,15 +18,17 @@ def errors_exec(code, *args):
 
 def translator(action, *args):
     global mainPrinted, err, main, GenPrinted
+
     if not GenPrinted:
         file = open('functions', 'r')
         if not file:
             raise IOError
         line = file.read()
-        genral = find_between(line, '@GENRAL', '@SEP')
+        genral = find_between(line, '@GENERAL', '@SEP')
         rez = open('test1.py', 'a')
         rez.write(genral)
         GenPrinted = True
+
     if action == 'mktable':  # Функция создания таблицы
         file = open('functions', 'r')
         if not file:
@@ -34,11 +36,13 @@ def translator(action, *args):
         line = file.read()
         function = find_between(line, '@' + action, '@SEP')
         rez = open('test1.py', 'a')
-        if action not in rez.read():
+        temp1 = open('test1.py', 'r')
+        temp = temp1.read()
+        if action not in temp:
             rez.write(function)
-        if mainPrinted == 0:
+        if not mainPrinted:
             main += "if __name__ == '__main__': \n"
-            mainPrinted = 1
+            mainPrinted = True
         main += "\t" + action + "('" + args[0] + "'," + str(args[1]) + ")\n"
     # Конец mktable
 
@@ -49,36 +53,113 @@ def translator(action, *args):
         line = file.read()
         function = find_between(line, '@' + action, '@SEP')
         rez = open('test1.py', 'a')
-        if action not in rez.read():
+        temp1 = open('test1.py', 'r')
+        temp = temp1.read()
+        if action not in temp:
+            rez.write(function)
+        if not mainPrinted:
+            main += "if __name__ == '__main__': \n"
+            mainPrinted = True
+        main += "\t" + action + "('" + args[0] + "'," + str(args[1]) + "," + str(args[2]) + ")\n"
+    # Конец addnote
+
+    if action == 'deltable':  # Команда удаление таблицы
+        file = open('functions', 'r')
+        if not file:
+            raise IOError
+        line = file.read()
+        function = find_between(line, '@' + action, '@SEP')
+        rez = open('test1.py', 'a')
+        temp1 = open('test1.py', 'r')
+        temp = temp1.read()
+        if action not in temp:
+            rez.write(function)
+        if not mainPrinted:
+            main += "if __name__ == '__main__': \n"
+            mainPrinted = True
+        main += "\t" + action + "('" + args[0] + "')\n"
+    # Конец deltable
+
+    if action == 'sort':  # Команда сортировки таблицы
+        file = open('functions', 'r')
+        if not file:
+            raise IOError
+        line = file.read()
+        function = find_between(line, '@' + action, '@SEP')
+        rez = open('test1.py', 'a')
+        temp1 = open('test1.py', 'r')
+        temp = temp1.read()
+        if action not in temp:
+            rez.write(function)
+        if not mainPrinted:
+            main += "if __name__ == '__main__': \n"
+            mainPrinted = True
+        if len(args) == 2:
+            main += "\t" + action + "('" + args[0] + "','" + args[1] + "')\n"
+        if len(args) == 3:
+            main += "\t" + action + "('" + args[0] + "','" + args[1] + "','" + args[2] + "')\n"
+    # Конец sort
+
+    if action == 'jointab':  # Команда объедения таблиц
+        file = open('functions', 'r')
+        if not file:
+            raise IOError
+        line = file.read()
+        function = find_between(line, '@' + action, '@SEP')
+        rez = open('test1.py', 'a')
+        temp1 = open('test1.py', 'r')
+        temp = temp1.read()
+        if action not in temp:
+            rez.write(function)
+        if not mainPrinted:
+            main += "if __name__ == '__main__': \n"
+            mainPrinted = True
+        main += "\t" + action + "('" + args[0] + "','" + args[1] + "')\n"
+    # Конец jointab
+
+    if action == 'show':  # Команда показа таблицы
+        if not mainPrinted:
+            main += "if __name__ == '__main__': \n"
+            mainPrinted = True
+        main += "\t" + action + "('" + args[0] + "')\n"
+    # Конец show
+
+    if action == 'delnote':  # Команда удаление записи
+        file = open('functions', 'r')
+        if not file:
+            raise IOError
+        line = file.read()
+        function = find_between(line, '@' + action, '@SEP')
+        rez = open('test1.py', 'a')
+        temp1 = open('test1.py', 'r')
+        temp = temp1.read()
+        if action not in temp:
+            function = function.replace('@key', str(args[1]))
+            function = function.replace('@condition', str(args[2]))
             rez.write(function)
         if mainPrinted == 0:
             main += "if __name__ == '__main__': \n"
             mainPrinted = 1
-        main += "\t" + action + "('" + args[0] + "'," + str(args[1]) + "," + str(args[1]) + ")\n"
-    # Конец addnote
-
-    if action == 'deltable':  # Команда удаление таблицы
-        pass
-    # Конец deltable
-
-    if action == 'sort':  # Команда сортировки таблицы
-        pass
-    # Конец sort
-
-    if action == 'jointab':  # Команда объедения таблиц
-        pass
-    # Конец jointab
-
-    if action == 'show':  # Команда показа таблицы
-        pass
-    # Конец show
-
-    if action == 'delnote':  # Команда удаление записи
-        pass
+        main += "\t" + action + "('" + args[0] + "')\n"
     # Конец delnote
 
     if action == 'filter':  # Команда филтер таблицы
-        pass
+        file = open('functions', 'r')
+        if not file:
+            raise IOError
+        line = file.read()
+        function = find_between(line, '@' + action, '@SEP')
+        rez = open('test1.py', 'a')
+        temp1 = open('test1.py', 'r')
+        temp = temp1.read()
+        if action not in temp:
+            function = function.replace('@key', str(args[1]))
+            function = function.replace('@condition', str(args[2]))
+            rez.write(function)
+        if mainPrinted == 0:
+            main += "if __name__ == '__main__': \n"
+            mainPrinted = 1
+        main += "\t" + action + "('" + args[0] + "')\n"
         # Конец filter
 
 
@@ -107,10 +188,7 @@ def check_syntax(command, action):
                     continue
                 else:
                     errors_exec('0104', arg)
-            temp = []
-            temp.append(name_of_table)
-            temp.append(args)
-            print(temp)
+            translator(action, name_of_table, args)
     # Конец mktable
 
     if action == 'addnote':  # Функция создания записи в таблице
@@ -132,8 +210,7 @@ def check_syntax(command, action):
             name_of_table = command[command.index('in') + 1:].pop(0)
         except:
             errors_exec('0102', action)
-
-        print(keys, values, name_of_table)
+        translator(action, name_of_table, keys, values)
     # Конец addnote
 
     if action == 'deltable':  # Команда удаление таблицы
@@ -141,7 +218,7 @@ def check_syntax(command, action):
         if len(command) > 1:
             errors_exec('0103', action)
         name_of_table = command.pop()
-        print(name_of_table)
+        translator(action, name_of_table)
     # Конец deltable
 
     if action == 'sort':  # Команда сортировки таблицы
@@ -158,7 +235,7 @@ def check_syntax(command, action):
             mode = command[command.index(key) + 1:].pop(0)
         except:
             pass
-        print(name_of_table, key, mode)
+        translator(action, name_of_table, key, mode)
     # Конец sort
 
     if action == 'jointab':  # Команда объедения таблиц
@@ -170,7 +247,7 @@ def check_syntax(command, action):
         name_of_table1 = command.pop(0)
         command.pop(0)
         name_of_table2 = command.pop(0)
-        print(name_of_table1, name_of_table2)
+        translator(action, name_of_table1, name_of_table2)
     # Конец jointab
 
     if action == 'show':  # Команда показа таблицы
@@ -178,7 +255,7 @@ def check_syntax(command, action):
         if len(command) > 1:
             errors_exec('0103', action)
         name_of_table = command.pop()
-        print(name_of_table)
+        translator(action, name_of_table)
     # Конец show
 
     if action == 'delnote':  # Команда удаление записи
@@ -192,7 +269,7 @@ def check_syntax(command, action):
         if len(temp) < 3:
             errors_exec("0105", action)
         key = temp.pop(0)
-        print(name_of_table, key, condition)
+        translator(action, name_of_table, key, condition)
     # Конец delnote
 
     if action == 'filter':  # Команда филтер таблицы
@@ -206,7 +283,7 @@ def check_syntax(command, action):
         if len(temp) < 3:
             errors_exec("0105", action)
         key = temp.pop(0)
-        print(name_of_table, key, condition)
+        translator(action, name_of_table, key, condition)
         # Конец filter
 
 
@@ -220,6 +297,10 @@ def find_between(s, first, last):
 
 
 if __name__ == '__main__':
-    pass
-    reader('filter table by id == 1')
-    # reader('mktable name inwitch tyt, ewr, we')
+    file = open('test1.py', 'w')
+    file.close()
+    enter_file = open('to_compile.txt', 'r')
+    for line in enter_file:
+        reader(line)
+    file = open('test1.py', 'a')
+    file.write(main)

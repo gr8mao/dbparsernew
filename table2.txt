@@ -1,4 +1,4 @@
-<int>id             |<str>Name           
+<int>De             |<str>Fame
 1                   |T
 3                   |qwe
 4                   |SA

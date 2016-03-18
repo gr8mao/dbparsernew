@@ -202,6 +202,8 @@ def sort(nameOfTable, key, mode='inc'):
     if not table:
         print("Table is not exist")
         return
+    headers = get_headers(list(table[0].keys()))
+    key = '<' + headers[key] + '>' + key
     if key not in list(table[0].keys()):
         print("No such key in table", nameOfTable)
         return
@@ -210,6 +212,7 @@ def sort(nameOfTable, key, mode='inc'):
     elif mode == 'dec':
         table = sorted(table, key=lambda d: d[key], reverse=True)
     save_table(table, nameOfTable)
+    show(nameOfTable)
 
 
 def filter(nameOfTable, condition):
@@ -230,4 +233,4 @@ def filter(nameOfTable, condition):
 
 
 if __name__ == '__main__':
-    filter('jopa', 'Ne > 2')
+    sort('test_tablejopa','id','dec')
