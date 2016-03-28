@@ -214,6 +214,40 @@ def sort(nameOfTable, key, mode='inc'):
     save_table(table, nameOfTable)
     show(nameOfTable)
 
+def bubble_sort(name_of_file):
+    file = open(name_of_file,'r')
+    header = file.readline()
+    line1 = ''
+    line2 = ''
+
+    i = 0
+    k = -len(header)
+    n=0
+    for line in file:
+        n+=1
+
+    for i in range(n-1,0,-1):
+        for j in range(i):
+            k += len(header)
+            file.seek(k,0)
+            line1 = file.readline()
+            line2 = file.readline()
+            print("Line 1: ", line1)
+            print("Line 2: ", line2)
+        file.seek(len(header),0)
+            # if alist[i]>alist[i+1]:
+            #     temp = alist[i]
+            #     alist[i] = alist[i+1]
+            #     alist[i+1] = temp
+    # while True:
+    #     line1 = file.readline()
+    #     line2 = file.readline()
+    #     if line1 == '' or line2 == '':
+    #         break
+    #     print("Line 1: ", line1)
+    #     print("Line 2: ", line2)
+
+
 
 def filter(nameOfTable, condition):
     table = read_table(nameOfTable)
@@ -233,4 +267,4 @@ def filter(nameOfTable, condition):
 
 
 if __name__ == '__main__':
-    sort('test_tablejopa','id','dec')
+    bubble_sort('test_table.txt')

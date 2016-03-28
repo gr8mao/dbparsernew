@@ -16,6 +16,9 @@ def read_table(name_of_table):
         str = ''.join(str.split())
         temp = str.split('|')
         data.append(temp)
+    if len(data) < 2:
+        temp = dict(zip(data[0], ['']*len(temp)))
+        table.append(temp)
     for elem in data[1:]:
         temp = OrderedDict(zip(data[0], elem))
         table.append(temp)
@@ -108,7 +111,7 @@ def addnote (name_of_table, keys, values):
             i += 1
         temp = OrderedDict(zip(list(table[0].keys()), value))
         table.append(temp)
-        return table
+        save_table(table,name_of_table)
 @SEP
 @mktable
 def mktable (name, args):
@@ -123,6 +126,7 @@ def mktable (name, args):
             print('Wrong type or missing type in', elem)
             return
     file.write(line.rstrip("|") + '\n')
+    file.close()
 @SEP
 @jointab
 def jointab (table1, table2):

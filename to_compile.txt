@@ -1,1 +1,2 @@
-jointab test_table with table2
+sort test_table by id inc
+show test_table
