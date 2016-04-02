@@ -1,2 +1,1 @@
-sort test_table by id inc
-show test_table
+sort table2 by id

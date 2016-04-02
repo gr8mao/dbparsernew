@@ -1,8 +1,10 @@
+@GENERAL
 from collections import OrderedDict
 import os
 
 
 def show(name_of_table):
+    name_of_table += '.txt'
     try:
         file = open(name_of_table, 'r')
     except OSError:
@@ -26,7 +28,23 @@ def show(name_of_table):
             break
 
 
+def get_headers(headers):
+    types = []
+    names = []
+    headers = ''.join(headers.split())
+    headers = headers.split('|')
+    for header in headers:
+        header = header.split('>')
+        header[0] = header[0][header[0].index('<') + 1:]
+        types.append(header[0])
+        names.append(header[1])
+    return OrderedDict(zip(names, types))
+
+
+@SEP
+@addnote
 def addnote(name_of_table, keys, values):
+    name_of_table += '.txt'
     if not len(keys) == len(values):
         print('Wrong number of arguments')
         return
@@ -70,19 +88,8 @@ def addnote(name_of_table, keys, values):
         file.write(stri.rstrip("|") + '\n')
 
 
-def get_headers(headers):
-    types = []
-    names = []
-    headers = ''.join(headers.split())
-    headers = headers.split('|')
-    for header in headers:
-        header = header.split('>')
-        header[0] = header[0][header[0].index('<') + 1:]
-        types.append(header[0])
-        names.append(header[1])
-    return OrderedDict(zip(names, types))
-
-
+@SEP
+@mktable
 def mktable(name, args):
     name += '.txt'
     line = ''
@@ -98,7 +105,11 @@ def mktable(name, args):
     file.close()
 
 
+@SEP
+@jointab
 def jointab(name_of_table1, name_of_table2):
+    name_of_table1 += '.txt'
+    name_of_table2 += '.txt'
     try:
         table1 = open(name_of_table1, 'r')
         table2 = open(name_of_table2, 'r')
@@ -151,7 +162,10 @@ def jointab(name_of_table1, name_of_table2):
             line2 = table2.readline()
 
 
-def delnote(name_of_table, key, value):
+@SEP
+@delnote_int
+def delnote(name_of_table):
+    name_of_table += '.txt'
     try:
         table = open(name_of_table, 'r')
         file = open('temp.txt', 'w')
@@ -161,7 +175,7 @@ def delnote(name_of_table, key, value):
     headers = table.readline()
     header_dict = get_headers(headers)
     try:
-        index = list(header_dict.keys()).index(key)
+        index = list(header_dict.keys()).index('@key')
     except IndexError:
         print('Key is not exist in this table')
         return
@@ -169,7 +183,10 @@ def delnote(name_of_table, key, value):
     for line in table:
         line = ''.join(line.split())
         line = line.split('|')
-        if int(line[index]) != value:
+        @key = int(line[index])
+        if @condition:
+            pass
+        else:
             stri = ''
             for elem in line:
                 stri += str(elem).ljust(20, " ") + '|'
@@ -186,6 +203,90 @@ def delnote(name_of_table, key, value):
         table.write(line)
 
 
+@SEP
+@delnote_str
+def delnote(name_of_table):
+    name_of_table += '.txt'
+    try:
+        table = open(name_of_table, 'r')
+        file = open('temp.txt', 'w')
+    except OSError:
+        print('Table is not exist')
+        return
+    headers = table.readline()
+    header_dict = get_headers(headers)
+    try:
+        index = list(header_dict.keys()).index('@key')
+    except IndexError:
+        print('Key is not exist in this table')
+        return
+    file.write(headers)
+    for line in table:
+        line = ''.join(line.split())
+        line = line.split('|')
+        @key = line[index]
+        if @condition:
+            pass
+        else:
+            stri = ''
+            for elem in line:
+                stri += str(elem).ljust(20, " ") + '|'
+            file.write(stri.rstrip("|") + '\n')
+    table.close()
+    file.close()
+    try:
+        table = open(name_of_table, 'w')
+        file = open('temp.txt', 'r')
+    except OSError:
+        print('Table is not exist')
+        return
+    for line in file:
+        table.write(line)
+
+
+@SEP
+@delnote_float
+def delnote(name_of_table):
+    name_of_table += '.txt'
+    try:
+        table = open(name_of_table, 'r')
+        file = open('temp.txt', 'w')
+    except OSError:
+        print('Table is not exist')
+        return
+    headers = table.readline()
+    header_dict = get_headers(headers)
+    try:
+        index = list(header_dict.keys()).index('@key')
+    except IndexError:
+        print('Key is not exist in this table')
+        return
+    file.write(headers)
+    for line in table:
+        line = ''.join(line.split())
+        line = line.split('|')
+        @key = float(line[index])
+        if @condition:
+            pass
+        else:
+            stri = ''
+            for elem in line:
+                stri += str(elem).ljust(20, " ") + '|'
+            file.write(stri.rstrip("|") + '\n')
+    table.close()
+    file.close()
+    try:
+        table = open(name_of_table, 'w')
+        file = open('temp.txt', 'r')
+    except OSError:
+        print('Table is not exist')
+        return
+    for line in file:
+        table.write(line)
+
+
+@SEP
+@deltable
 def deltable(name_of_table):  # Ready
     choice = input("Are you sure? (y/n) ")
     if choice is 'y' or 'Y':
@@ -197,7 +298,10 @@ def deltable(name_of_table):  # Ready
             return
 
 
-def filter(name_of_table, key, value):
+@SEP
+@filter_int
+def filter(name_of_table):
+    name_of_table += '.txt'
     try:
         table = open(name_of_table, 'r')
     except OSError:
@@ -206,7 +310,7 @@ def filter(name_of_table, key, value):
     headers = table.readline()
     header_dict = get_headers(headers)
     try:
-        index = list(header_dict.keys()).index(key)
+        index = list(header_dict.keys()).index('@key')
     except:
         print('Key is not exist in this table')
         return
@@ -214,7 +318,8 @@ def filter(name_of_table, key, value):
     for line in table:
         line = ''.join(line.split())
         line = line.split('|')
-        if int(line[index]) > value:
+        @key = int(line[index])
+        if @condition:
             stri = ''
             for elem in line:
                 stri += str(elem).ljust(20, " ") + '|'
@@ -222,7 +327,68 @@ def filter(name_of_table, key, value):
     table.close()
 
 
-def sort(name_of_file, key):
+@SEP
+@filter_float
+def filter(name_of_table):
+    name_of_table += '.txt'
+    try:
+        table = open(name_of_table, 'r')
+    except OSError:
+        print('Table is not exist')
+        return
+    headers = table.readline()
+    header_dict = get_headers(headers)
+    try:
+        index = list(header_dict.keys()).index('@key')
+    except:
+        print('Key is not exist in this table')
+        return
+    print(headers.replace('\n', ''))
+    for line in table:
+        line = ''.join(line.split())
+        line = line.split('|')
+        @key = float(line[index])
+        if @condition:
+            stri = ''
+            for elem in line:
+                stri += str(elem).ljust(20, " ") + '|'
+            print(stri.rstrip("|"))
+    table.close()
+
+
+@SEP
+@filter_str
+def filter(name_of_table):
+    name_of_table += '.txt'
+    try:
+        table = open(name_of_table, 'r')
+    except OSError:
+        print('Table is not exist')
+        return
+    headers = table.readline()
+    header_dict = get_headers(headers)
+    try:
+        index = list(header_dict.keys()).index('@key')
+    except:
+        print('Key is not exist in this table')
+        return
+    print(headers.replace('\n', ''))
+    for line in table:
+        line = ''.join(line.split())
+        line = line.split('|')
+        @key = line[index]
+        if @condition:
+            stri = ''
+            for elem in line:
+                stri += str(elem).ljust(20, " ") + '|'
+            print(stri.rstrip("|"))
+    table.close()
+
+
+@SEP
+@sort
+def sort(name_of_file):
+    name_of_file += '.txt'
     try:
         file = open(name_of_file, 'r')
         nfile = open('sort_temp.txt', 'w')
@@ -233,7 +399,7 @@ def sort(name_of_file, key):
     headers = file.readline()
     header_dict = get_headers(headers)
     try:
-        index = list(header_dict.keys()).index(key)
+        index = list(header_dict.keys()).index('@key')
     except IndexError:
         print('Key is not exist in this table')
         return
@@ -310,5 +476,5 @@ def sort(name_of_file, key):
             file.close()
             break
 
-if __name__ == '__main__':
-    sort('test_table.txt','id')
+
+@SEP
