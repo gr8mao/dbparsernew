@@ -1,1 +1,1 @@
-sort table2 by id
+yhjdsfg table2 by id

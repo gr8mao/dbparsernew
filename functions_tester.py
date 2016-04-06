@@ -37,7 +37,7 @@ def addnote(name_of_table, keys, values):
         return
     headers = get_headers(file.readline())
     file.close()
-    if all(map(lambda a, b: a == b, keys, list(headers.keys()))):
+    if all(map(lambda a, b: a == b, keys, list(headers.keys()))) and (len(keys) == len(list(headers.keys()))):
         i = 0
         value = []
         for item in values:
@@ -311,4 +311,4 @@ def sort(name_of_file, key):
             break
 
 if __name__ == '__main__':
-    sort('test_table.txt','id')
+    addnote('table2.txt',['id','Name','Fame'],['1','werw','weq'])

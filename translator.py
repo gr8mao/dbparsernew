@@ -7,12 +7,32 @@ main = ''
 
 def errors_exec(code, *args):
     print({
-              '0101': 'Такой команды не существует',
-              '0102': 'Неверный синтаксис команды',
-              '0103': 'Неверное количество аргументов в команде',
-              '0104': 'Не указаны спецификации типов в команде mktable столбец',
-              '0105': 'Неверно указано условие в команде'
-          }.get(code), args[0])
+              # Общие ошибки
+              '0101': 'Не найдено ключевое слово',
+              # Ошибки команды mktable
+              '0201': 'Неверный синтаксис комнады mktable. Не найдено ключевое слово "inwhich"',
+              '0202': 'Не указаны спецификации типов в команде mktable. Столбец',
+              # Ошибки команды addnote
+              '0301': 'Неверный синтаксис команды addnote. Не найдено ключевое слово ',
+              '0302': 'Неверный синтаксис команды addnote. Не найдено навзвание таблицы',
+              '0303': 'В команде addnote недопустимое количество символов в аргументе',
+              # Ошибки команды deltable
+              '0401': 'В команде deltable недопустимое количество аргументов. Найдено ',
+              # Ошибки команды sort
+              '0501': 'Неверный синтаксис команды sort. Не найдено ключевое слово ',
+              '0502': 'Неверное количество аргументов в команде sort. Ожидалось аргументов ',
+              # Ошибки команды jointab
+              '0601': 'Неверный синтаксис команды jointab. Не найдено ключевое слово ',
+              '0602': 'Неверное количество аргументов в команде jointab.',
+              # Ошибки команды show
+              '0701': 'В команде show недопустимое количество аргументов. Найдено ',
+              # Ошибки команды delnote
+              '0801': 'Неверный синтаксис команды delnote. Не найдено ключевое слово ',
+              '0802': 'Неверно указано условие в команде delnote. Найдено ',
+              # Ошибки команды filter
+              '0901': 'Неверный синтаксис команды filter. Не найдено ключевое слово ',
+              '0902': 'Неверно указано условие в команде filter. Найдено ',
+          }.get(code), args[0], '(Строка: ', args[1], ')')
     exit(0)
 
 
@@ -90,7 +110,7 @@ def translator(action, *args):
         temp1 = open('test1.py', 'r')
         temp = temp1.read()
         if action not in temp:
-            rez.write(function.replace('@key',str(args[1])))
+            rez.write(function.replace('@key', str(args[1])))
         if not mainPrinted:
             main += "if __name__ == '__main__': \n"
             mainPrinted = True
@@ -160,19 +180,19 @@ def translator(action, *args):
         # Конец filter
 
 
-def reader(command):
+def reader(command, line_number):
     command = ' '.join(command.split())
     command = command.split(' ')
     action = command[0]
     if action not in commands:
-        errors_exec('0101', action)
-    check_syntax(command, action)
+        errors_exec('0101', action, line_number)
+    check_syntax(command, action, line_number)
 
 
-def check_syntax(command, action):
+def check_syntax(command, action, line_number):
     if action == 'mktable':  # Функция создания таблицы
-        if command[2] != 'inwitch':
-            errors_exec('0102', action)
+        if command[2] != 'inwhich':
+            errors_exec('0201', action)
         else:
             command.pop(0)
             command.pop(1)
@@ -184,7 +204,7 @@ def check_syntax(command, action):
                 if arg.find('<str>') != -1 or arg.find('<int>') != -1 or arg.find('<float>') != -1:
                     continue
                 else:
-                    errors_exec('0104', arg)
+                    errors_exec('0202', arg, line_number)
             translator(action, name_of_table, args)
     # Конец mktable
 
@@ -194,26 +214,29 @@ def check_syntax(command, action):
             keys = ''.join(command[:command.index('values')])
             keys.replace(' ', '')
         except:
-            errors_exec('0102', action)
+            errors_exec('0301', "values", line_number)
         command = command[command.index('values') + 1:]
         try:
             values = ''.join(command[:command.index('in')])
             values.replace(' ', '')
         except:
-            errors_exec('0102', action)
+            errors_exec('0301', "in", line_number)
         keys = keys.split(',')
         values = values.split(',')
         try:
             name_of_table = command[command.index('in') + 1:].pop(0)
         except:
-            errors_exec('0102', action)
+            errors_exec('0302', name_of_table, line_number)
+        for value in values:
+            if len(value) > 20:
+                errors_exec('0303', value, line_number)
         translator(action, name_of_table, keys, values)
     # Конец addnote в check_syntax
 
     if action == 'deltable':  # Команда удаление таблицы
         command.pop(0)
-        if len(command) > 1:
-            errors_exec('0103', action)
+        if len(command) > 1 or len(command) == 0:
+            errors_exec('0401', command, line_number)
         name_of_table = command.pop()
         translator(action, name_of_table)
     # Конец deltable
@@ -224,23 +247,23 @@ def check_syntax(command, action):
         try:
             key = command[command.index('by') + 1:]
             if len(key) > 2:
-                errors_exec('0103', action)
-            key = key.pop(0)
+                errors_exec('0502', 1, line_number)
         except:
-            errors_exec('0102', action)
-        try:
-            mode = command[command.index(key) + 1:].pop(0)
-        except:
-            pass
+            errors_exec('0501', "by", line_number)
+        key = key.pop(0)
+        # try:
+        #     mode = command[command.index(key) + 1:].pop(0)
+        # except:
+        #     pass
         translator(action, name_of_table, key)
     # Конец sort
 
     if action == 'jointab':  # Команда объедения таблиц
         command.pop(0)
         if command[1] != 'with':
-            errors_exec('0102', action)
+            errors_exec('0601', 'with', line_number)
         if len(command) > 3:
-            errors_exec('0103', action)
+            errors_exec('0602', '', line_number)
         name_of_table1 = command.pop(0)
         command.pop(0)
         name_of_table2 = command.pop(0)
@@ -250,7 +273,7 @@ def check_syntax(command, action):
     if action == 'show':  # Команда показа таблицы
         command.pop(0)
         if len(command) > 1:
-            errors_exec('0103', action)
+            errors_exec('0701', command, line_number)
         name_of_table = command.pop()
         translator(action, name_of_table)
     # Конец show
@@ -258,13 +281,13 @@ def check_syntax(command, action):
     if action == 'delnote':  # Команда удаление записи
         command.pop(0)
         if command[1] != 'where':
-            errors_exec('0102', action)
+            errors_exec('0801', 'where', line_number)
         name_of_table = command.pop(0)
         condition = command[command.index('where') + 1:]
         condition = ' '.join(condition)
         temp = condition.split(' ')
         if len(temp) < 3:
-            errors_exec("0105", action)
+            errors_exec("0802", condition, line_number)
         key = temp.pop(0)
         print(condition)
         value = temp.pop()
@@ -275,13 +298,13 @@ def check_syntax(command, action):
     if action == 'filter':  # Команда филтер таблицы
         command.pop(0)
         if command[1] != 'by':
-            errors_exec('0102', action)
+            errors_exec('0901', 'by', line_number)
         name_of_table = command.pop(0)
         condition = command[command.index('by') + 1:]
         condition = ' '.join(condition)
         temp = condition.split(' ')
         if len(temp) < 3:
-            errors_exec("0105", action)
+            errors_exec("0902", condition, line_number)
         key = temp.pop(0)
         value = temp.pop()
         type = check_type(value)
@@ -297,6 +320,7 @@ def check_type(value):
     else:
         return 'str'
 
+
 def find_between(s, first, last):
     try:
         start = s.index(first) + len(first)
@@ -310,7 +334,7 @@ if __name__ == '__main__':
     file = open('test1.py', 'w')
     file.close()
     enter_file = open('to_compile.txt', 'r')
-    for line in enter_file:
-        reader(line)
+    for index, line in enumerate(enter_file):
+        reader(line, index + 1)
     file = open('test1.py', 'a')
     file.write(main)
