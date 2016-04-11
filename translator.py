@@ -1,3 +1,5 @@
+from collections import OrderedDict
+
 commands = ['show', 'mktable', 'addnote', 'delnote', 'deltable', 'filter', 'sort', 'jointab']
 mainPrinted = False
 GenPrinted = False
@@ -12,9 +14,10 @@ def errors_exec(code, *args):
               # Ошибки команды mktable
               '0201': 'Неверный синтаксис комнады mktable. Не найдено ключевое слово "inwhich"',
               '0202': 'Не указаны спецификации типов в команде mktable. Столбец',
+              '0203': 'Указано 2 или более одинаковых поля в команде mktable.',
               # Ошибки команды addnote
               '0301': 'Неверный синтаксис команды addnote. Не найдено ключевое слово ',
-              '0302': 'Неверный синтаксис команды addnote. Не найдено навзвание таблицы',
+              '0302': 'Неверный синтаксис команды addnote. Не найдено название таблицы',
               '0303': 'В команде addnote недопустимое количество символов в аргументе',
               # Ошибки команды deltable
               '0401': 'В команде deltable недопустимое количество аргументов. Найдено ',
@@ -32,8 +35,8 @@ def errors_exec(code, *args):
               # Ошибки команды filter
               '0901': 'Неверный синтаксис команды filter. Не найдено ключевое слово ',
               '0902': 'Неверно указано условие в команде filter. Найдено ',
-          }.get(code), args[0], '(Строка: ', args[1], ')')
-    exit(0)
+          }.get(code), args[0], '( Строка:', args[1], ')')
+    exit(int(code))
 
 
 def translator(action, *args):
@@ -188,23 +191,39 @@ def reader(command, line_number):
         errors_exec('0101', action, line_number)
     check_syntax(command, action, line_number)
 
+def get_headers(headers):
+    types = []
+    names = []
+    headers = ''.join(headers.split())
+    headers = headers.split('|')
+    for header in headers:
+        header = header.split('>')
+        header[0] = header[0][header[0].index('<') + 1:]
+        types.append(header[0])
+        names.append(header[1])
+    return OrderedDict(zip(names, types))
+
 
 def check_syntax(command, action, line_number):
     if action == 'mktable':  # Функция создания таблицы
         if command[2] != 'inwhich':
-            errors_exec('0201', action)
+            errors_exec('0201', action,line_number)
         else:
             command.pop(0)
             command.pop(1)
             name_of_table = command.pop(0)
-            args = ''.join(command)
-            args.replace(' ', '')
-            args = args.split(',')
+            temp = ''.join(command)
+            temp.replace(' ', '')
+            args = temp.split(',')
+            n = 0
             for arg in args:
                 if arg.find('<str>') != -1 or arg.find('<int>') != -1 or arg.find('<float>') != -1:
+                    n += 1
                     continue
                 else:
                     errors_exec('0202', arg, line_number)
+            if n != len(list(get_headers(temp.replace(',','|')).keys())):
+                errors_exec('0203','',line_number)
             translator(action, name_of_table, args)
     # Конец mktable
 
@@ -285,6 +304,8 @@ def check_syntax(command, action, line_number):
         name_of_table = command.pop(0)
         condition = command[command.index('where') + 1:]
         condition = ' '.join(condition)
+        if condition.find('=') != -1:
+            condition = condition.replace('=','==')
         temp = condition.split(' ')
         if len(temp) < 3:
             errors_exec("0802", condition, line_number)
@@ -338,3 +359,4 @@ if __name__ == '__main__':
         reader(line, index + 1)
     file = open('test1.py', 'a')
     file.write(main)
+    print('Файл успешно транслирован')

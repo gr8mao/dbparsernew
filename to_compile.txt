@@ -1,1 +1,1 @@
-yhjdsfg table2 by id
+mktable testing inwerugh <int>id,<str>id,       <int>id, <str>id

@@ -85,6 +85,9 @@ def get_headers(headers):
 
 def mktable(name, args):
     name += '.txt'
+    if os.path.exists(name):
+        print('Alredy exist')
+        return
     line = ''
     for elem in args:
         if (elem.find('<str>') != -1 or elem.find('<int>') != -1 or elem.find('<float>') != -1) and len(
