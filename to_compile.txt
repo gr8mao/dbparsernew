@@ -1,1 +1,1 @@
-mktable testing inwerugh <int>id,<str>id,       <int>id, <str>id
+show table2
